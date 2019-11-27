@@ -1,0 +1,54 @@
+const int c_outA = 5; /* c_ is place holder for which motor is being used */
+const int c_outB = 8;
+const int c_motorPin1 = 7;
+const int c_motorPin2 = 4;
+const int c_en = 3;
+const int c_numPulse = 100; /* Change Value when num of pings is known */
+const double wheelCircum = 2.0; /* Diameter = 5.25 inches */
+int counter = 0;
+int prevRead = 0;
+int currentRead = 0;
+double distance = 0.0;
+
+/*
+ *   Code is only for calculating distance moving [Forward]and [Backward]. Does not yet account for vehicle rotation, etc.
+ */
+
+void setup() {
+  pinMode(c_outA, INPUT);
+  pinMode(c_outB, INPUT);
+  pinMode(c_motorPin1, OUTPUT);
+  pinMode(c_motorPin2, OUTPUT);
+  pinMode(c_en, OUTPUT);
+  prevRead = digitalRead(c_outA);
+  Serial.begin(9600);
+}
+
+void loop() {
+  digitalWrite(c_motorPin1, LOW);
+  digitalWrite(c_motorPin2, HIGH);
+  analogWrite(c_en, 125);
+  
+  currentRead = digitalRead(c_outA);
+  if (prevRead != currentRead)
+  {
+    if (digitalRead(c_outB) != currentRead)
+    {
+      counter++;
+      if ((counter % c_numPulse) == 0)
+      {
+        distance += wheelCircum;
+      }
+    }
+    else
+    {
+      counter--;
+      if ((counter % c_numPulse) == 0)
+      {
+        distance += wheelCircum;
+      }
+    }
+    Serial.println(distance);
+    Serial.print(" ");
+  }
+}
